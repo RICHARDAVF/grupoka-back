@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from conexion import CAQ
-import uvicorn
 app = FastAPI()
 
 @app.get("/")
@@ -22,4 +21,6 @@ async def get_data():
     
     return data
 if __name__ =='__main__':
-    uvicorn.run("main:app", reload=True)
+    import os
+    import sys
+    os.system("gunicorn -c gunicorn_config.py -w 4 -k uvicorn.workers.UvicornWorker start_app:app")
