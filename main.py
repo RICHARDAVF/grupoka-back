@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from conexion import CAQ
+import uvicorn
 app = FastAPI()
 
 @app.get("/")
-def get_data():
+async def get_data():
     data = []
     try:
         sql = "SELECT aux_clave,aux_docum FROM t_auxiliar"
@@ -20,3 +21,5 @@ def get_data():
         data = {"error":str(e)}
     
     return data
+if __name__ =='__main__':
+    uvicorn.run("main:app", reload=True)
