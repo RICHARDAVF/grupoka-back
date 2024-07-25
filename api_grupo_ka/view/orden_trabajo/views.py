@@ -9,6 +9,7 @@ class ListOT(GenericAPIView):
             params = '<'
         elif option == 'close':
             params = '=' 
+        print(request.data)
         sql = f"""
             SELECT 
                 a.mov_compro,
@@ -19,16 +20,17 @@ class ListOT(GenericAPIView):
                 tec_avance 
             FROM cabetecnico AS a 
             LEFT JOIN t_auxiliar b ON a.mov_codaux=b.aux_clave 
-            WHERE tec_avance{params}100
+            WHERE 
+                tec_avance{params}100
+                AND a.elimini=0 
+                AND a.mov_codaux=? 
+            ORDER BY a.mov_compro DESC
             """
-        part = """ WHERE a.elimini=0 AND a.mov_codaux='' 
-                AND a.mov_fecha>=''
-                AND a.mov_fecha<='' 
-                AND a.mov_compro=''"""
         data = {}
         try:
+            params = (datos['codigo'],)
+            res = CAQ.query(sql,params)
             
-            res = CAQ.query(sql,())
             data = [
                 {
                 'index':index,
@@ -40,6 +42,7 @@ class ListOT(GenericAPIView):
                 "avance":value[5]
 
             } for index,value in enumerate(res)]
+
         except Exception as e:
             data['error'] = str(e)
         return Response(data)
@@ -83,8 +86,64 @@ class StateView(GenericAPIView):
                 "revision":res[1]==1,
                 "proyecto":res[2]==1,
                 "asignacion":res[3]==1,
-                
+                "posiciones":res[4]==1,
+                "aprobacion":res[5]==1,
+                "disain":res[6]==1,
+                "calidad1":res[7]==1,
+                "equipamiento":res[8]==1,
+                "montaje":res[9]==1,
+                "instalacion_electrica":res[10]==1,
+                "instalacion_accesorio":res[11]==1,
+                "pdi":res[12]==1,
+                "pruebas":res[13]==1,
+                "calidad2":res[14]==1,
+                "documentacion":res[15]==1,
+                "acta_entrega":res[16]==1,
+                "firma_aceptacion":res[17]==1,
+                "facturacion":res[18]==1,
+                "soporte":res[19]==1,
+                "avance":res[20],
+                "estado":self.avance(res)              
             }
+           
         except Exception as e:
             data['error'] = str(e)
         return Response(data)
+    def avance(self,data):
+        date = {
+            "recepcion_vehiculo":0,
+            "produccion_em":0,
+            "equipamiento_vehiculo":0,
+            "pruebas_verificacion":0,
+            "entrega_vehiculo":0,
+            "total_avance":0
+        }
+        cont = 0
+        total = 0
+        for i in range(0,len(data),4):
+            if cont==0:
+                res = sum(data[i:i+4])
+                total+=res
+                date['recepcion_vehiculo'] = int(res*100/4)
+            elif cont==1:
+                res = sum(data[i:i+4])
+                total+=res
+                date['produccion_em'] = int(res*100/4)
+            elif cont==2:
+                res = sum(data[i:i+4])
+                total+=res
+                date['equipamiento_vehiculo'] = int(res*100/4)
+            elif cont ==3:
+                res = sum(data[i:i+4])
+                total+=res
+                date['pruebas_verificacion'] = int(res*100/4)
+            elif cont==4:
+                res = sum(data[i:i+4])
+                total+=res
+                date['entrega_vehiculo'] = int(res*100/4)
+            cont+=1
+        print(total)
+        date['avance_total'] = int(total*100/20)
+        return date
+      
+
