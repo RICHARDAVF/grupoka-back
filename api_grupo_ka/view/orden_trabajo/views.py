@@ -9,7 +9,6 @@ class ListOT(GenericAPIView):
             params = '<'
         elif option == 'close':
             params = '=' 
-        print(request.data)
         sql = f"""
             SELECT 
                 a.mov_compro,
@@ -142,7 +141,7 @@ class StateView(GenericAPIView):
                 total+=res
                 date['entrega_vehiculo'] = int(res*100/4)
             cont+=1
-        print(total)
+
         date['avance_total'] = int(total*100/20)
         return date
       
