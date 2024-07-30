@@ -19,7 +19,6 @@ from django.urls import path,include
 from api_grupo_ka.views import index
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',index),
+    path('', index, name='index'),
     path('api/v1/',include('api_grupo_ka.urls')),
-
 ]

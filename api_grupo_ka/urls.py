@@ -8,5 +8,6 @@ urlpatterns = [
     path("login/",LoginView.as_view(),name="login"),
     path("list/ot/",ListOT.as_view(),name="list_ot"),
     path("state/ot/",StateView.as_view(),name="state_ot")
+    
 ]
 urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
