@@ -1,8 +1,14 @@
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from api_grupo_ka.conexion import CAQ
-
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 class LoginView(GenericAPIView):
+
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
     def post(self,request,*args,**kwargs):
         data = {}
         try:
