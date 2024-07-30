@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-grkp(f@hy43ql97)!)mq_u-tld@(yj17s!!ll1_^akf8@-bza^
 DEBUG = os.getenv("DEBUG")=='True'
 
 CORS_ALLOW_ALL_ORIGINS = True
-ALLOWED_HOSTS = ['localhost','192.168.1.12']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
