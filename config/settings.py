@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-grkp(f@hy43ql97)!)mq_u-tld@(yj17s!!ll1_^akf8@-bza^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")=='True'
 # print(DEBUG)
-CORS_ALLOW_ALL_ORIGINS = True
+
 ALLOWED_HOSTS = ['*']
 
 
@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "rest_framework",
     "corsheaders",
+    "rest_framework",
     "api_grupo_ka"
 ]
 
