@@ -29,8 +29,11 @@ DEBUG = os.getenv("DEBUG")=='True'
 # print(DEBUG)
 
 ALLOWED_HOSTS = ['*']
+CORS_ALLOW_ALL_ORIGINS = True
 
-
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -55,7 +58,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
