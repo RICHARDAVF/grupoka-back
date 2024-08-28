@@ -14,22 +14,23 @@ class ListOT(GenericAPIView):
             params = '<'
         elif option == 'close':
             params = '=' 
+
         sql = f"""
-            SELECT 
-                a.mov_compro,
-                a.mov_cotiza,
-                ISNULL(b.aux_razon,''),
-                a.cot_placa,
-                a.cot_chasis,
-                tec_avance 
-            FROM cabetecnico AS a 
-            LEFT JOIN t_auxiliar b ON a.mov_codaux=b.aux_clave 
-            WHERE 
-                tec_avance{params}100
-                AND a.elimini=0 
-                AND a.mov_codaux=? 
-            ORDER BY a.mov_compro DESC
-            """
+        SELECT 
+            a.mov_compro,
+            'mov_cotiza'=ISNULL(b.mov_cotiza,''),
+            'cot_placa'=(CASE WHEN ISNULL(b.tec_todo,0)=1 THEN a.act_placa ELSE ISNULL(b.cot_placa,'') END),
+            'cot_chasis'=(CASE WHEN ISNULL(b.tec_todo,0)=1 THEN a.act_chasis ELSE ISNULL(b.cot_chasis,'') END),
+            a.tec_avance, 
+            a.act_marca
+        FROM m_acta_recepcion AS a 
+        LEFT JOIN cabetecnico b ON a.mov_compro=b.mov_compro 
+        WHERE 
+            a.tec_avance{params}100
+            AND b.elimini=0
+            AND b.mov_codaux=?
+        ORDER BY a.mov_compro DESC
+        """
         data = {}
         try:
             params = (datos['codigo'],)
@@ -40,10 +41,10 @@ class ListOT(GenericAPIView):
                 'index':index,
                 'numero_ot':value[0].strip(),
                 'numero_cotizacion':value[1].strip(),
-                'cliente':value[2].strip(),
-                "placa":value[3].strip(),
-                'chasis':value[4].strip(),
-                "avance":value[5]
+                "placa":value[2].strip(),
+                'chasis':value[3].strip(),
+                "avance":value[4],
+                "marca":value[5].strip()
 
             } for index,value in enumerate(res)]
 
@@ -81,12 +82,13 @@ class StateView(GenericAPIView):
                     tec_factur,
                     tec_soppv,
                     tec_avance 
-                FROM cabetecnico
+                FROM m_acta_recepcion
                 WHERE 
                     MOV_COMPRO=?
-                    AND mov_cotiza=?
+                  
     """
-            params = (datos['numero_ot'],datos['numero_cotizacion'])
+            params = (datos['numero_ot'],)
+
             res = CAQ.query(sql,params,0)
             data = {
                 "acta_recepcion":res[0]==1,
