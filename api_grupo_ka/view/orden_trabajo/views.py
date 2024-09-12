@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from api_grupo_ka.conexion import CAQ
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from datetime import datetime
 class ListOT(GenericAPIView):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -19,12 +20,17 @@ class ListOT(GenericAPIView):
         SELECT 
             a.mov_compro,
             'mov_cotiza'=ISNULL(b.mov_cotiza,''),
-            'cot_placa'=(CASE WHEN ISNULL(b.tec_todo,0)=1 THEN a.act_placa ELSE ISNULL(b.cot_placa,'') END),
-            'cot_chasis'=(CASE WHEN ISNULL(b.tec_todo,0)=1 THEN a.act_chasis ELSE ISNULL(b.cot_chasis,'') END),
+            'cot_placa'=(CASE WHEN a.act_placa='' THEN ISNULL(c.act_placa,'') ELSE a.act_placa END),
+            'cot_chasis'= a.act_chasis ,
             a.tec_avance, 
-            a.act_marca
+            a.act_marca,
+            a.mov_compr2,
+            a.act_fecha,
+            c.mov_compr2,
+            c.act_fecha
         FROM m_acta_recepcion AS a 
         LEFT JOIN cabetecnico b ON a.mov_compro=b.mov_compro 
+        LEFT JOIN m_acta_entrega AS c ON a.mov_compro=c.mov_compro AND a.act_chasis=c.act_chasis
         WHERE 
             a.tec_avance{params}100
             AND b.elimini=0
@@ -44,13 +50,23 @@ class ListOT(GenericAPIView):
                 "placa":value[2].strip(),
                 'chasis':value[3].strip(),
                 "avance":value[4],
-                "marca":value[5].strip()
-
+                "marca":value[5].strip(),
+                "acta_recepcion":value[6].strip(),
+                "fecha_recepcion":self.datetime_valid_format(value[7]),
+                "acta_entrega":value[8],
+                "fecha_entrega":self.datetime_valid_format(value[9])
             } for index,value in enumerate(res)]
 
         except Exception as e:
             data['error'] = str(e)
         return Response(data)
+    def datetime_valid_format(self,date:datetime):
+        data = ""
+        try:
+            data = date.strftime("%d-%m-%Y")
+        except:
+            pass
+        return data
 class StateView(GenericAPIView):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
