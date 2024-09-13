@@ -100,11 +100,9 @@ class StateView(GenericAPIView):
                     tec_avance 
                 FROM m_acta_recepcion
                 WHERE 
-                    MOV_COMPRO=?
-                  
+                    mov_compr2=?      
     """
-            params = (datos['numero_ot'],)
-
+            params = (datos['acta_recepcion'],)
             res = CAQ.query(sql,params,0)
             data = {
                 "acta_recepcion":res[0]==1,
@@ -132,6 +130,7 @@ class StateView(GenericAPIView):
             }
            
         except Exception as e:
+            print(str(e))
             data['error'] = str(e)
         return Response(data)
     def avance(self,data):
